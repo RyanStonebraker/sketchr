@@ -1,0 +1,48 @@
+body {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+body h1 {
+  text-align: center;
+  margin: 0;
+  margin-bottom: auto;
+}
+section.natural-lang {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: auto;
+  width: 100%;
+}
+section.natural-lang div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+section.natural-lang div textarea {
+  border-radius: 15px;
+  width: 50%;
+  outline: none;
+  padding: 5px 10px;
+  font-size: 15px;
+  height: 20px;
+  text-align: center;
+}
+section.natural-lang div h1 {
+  margin: 0;
+}
+section.natural-lang button {
+  width: 100px;
+  padding: 5px;
+  margin: auto;
+  border: none;
+  outline: none;
+  background-color: lightgrey;
+  border-radius: 15px;
+}

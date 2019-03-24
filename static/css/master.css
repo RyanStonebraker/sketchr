@@ -2,6 +2,7 @@ body {
   padding: 0;
   margin: 0;
   height: 100vh;
+  font-family: 'Germania One', cursive;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,7 +11,7 @@ body {
 body h1 {
   text-align: center;
   margin: 0;
-  margin-bottom: auto;
+  font-size: 100px;
 }
 section.natural-lang {
   display: flex;
@@ -29,20 +30,35 @@ section.natural-lang div textarea {
   border-radius: 15px;
   width: 50%;
   outline: none;
-  padding: 5px 10px;
+  padding: 0px 10px;
   font-size: 15px;
   height: 20px;
   text-align: center;
+  line-height: 20px;
+  resize: none;
+  overflow: hidden;
 }
 section.natural-lang div h1 {
   margin: 0;
+  font-size: 300px;
+  font-family: 'Germania One', cursive;
+  line-height: 282px;
+  height: 300px;
 }
 section.natural-lang button {
-  width: 100px;
-  padding: 5px;
+  padding: 5px 25px;
   margin: auto;
   border: none;
   outline: none;
   background-color: lightgrey;
   border-radius: 15px;
+  font-size: 25px;
+  margin-top: 15px;
+  font-family: 'Germania One', cursive;
+  transition: all 0.5s ease;
+}
+section.natural-lang button:hover {
+  transition: all 0.5s ease;
+  background-color: grey;
+  cursor: pointer;
 }

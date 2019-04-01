@@ -13,6 +13,10 @@ body h1 {
   margin: 0;
   font-size: 100px;
 }
+body > p {
+  margin: 0;
+  padding: 0;
+}
 section.natural-lang {
   display: flex;
   flex-direction: column;

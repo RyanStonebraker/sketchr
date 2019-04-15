@@ -28,7 +28,7 @@ section.natural-lang div {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
+  padding-top: 30px;
 }
 section.natural-lang div textarea {
   border-radius: 15px;
@@ -44,6 +44,7 @@ section.natural-lang div textarea {
 }
 section.natural-lang div h1 {
   margin: 0;
+  margin-top: -140px;
   font-size: 300px;
   font-family: 'Germania One', cursive;
   line-height: 282px;

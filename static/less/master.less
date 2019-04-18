@@ -21,59 +21,83 @@ body {
   }
 }
 
-section.natural-lang {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-bottom: auto;
+form {
   width: 100%;
-
-  div {
+  height: 100%;
+  
+  section.natural-lang {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
-    padding-top: 30px;
+    margin-bottom: auto;
+    width: 100%;
 
-    textarea {
-      border-radius: 15px;
-      width: 50%;
+    div {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      padding-top: 30px;
+
+      textarea {
+        border-radius: 15px;
+        width: 50%;
+        outline: none;
+        padding: 0px 10px;
+        font-size: 15px;
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+        resize: none;
+        overflow: hidden;
+      }
+
+      h1 {
+        height: 0;
+        margin: 0;
+        margin-top: -140px;
+        font-size: 300px;
+        font-family: 'Germania One', cursive;
+        line-height: 282px;
+        // height: 300px;
+      }
+    }
+
+    button {
+      padding: 5px 25px;
+      margin: auto;
+      border: none;
       outline: none;
-      padding: 0px 10px;
-      font-size: 15px;
-      height: 20px;
-      text-align: center;
-      line-height: 20px;
-      resize: none;
-      overflow: hidden;
-    }
 
-    h1 {
-      margin: 0;
-      margin-top: -140px;
-      font-size: 300px;
+      background-color: lightgrey;
+      border-radius: 15px;
+      font-size: 25px;
+      margin-top: 15px;
       font-family: 'Germania One', cursive;
-      line-height: 282px;
-      height: 300px;
+      transition: all 0.5s ease;
+    }
+
+    button:hover {
+      transition: all 0.5s ease;
+      background-color: grey;
+      cursor: pointer;
     }
   }
 
-  button {
-    padding: 5px 25px;
+  section.info {
+    width: 50%;
     margin: auto;
-    border: none;
-    outline: none;
-
-    background-color: lightgrey;
-    border-radius: 15px;
-    font-size: 25px;
     margin-top: 15px;
-    font-family: 'Germania One', cursive;
-    transition: all 0.5s ease;
-  }
+    border-radius: 5px;
+    background-color: lightgrey;
+    padding: 5px;
 
-  button:hover {
-    transition: all 0.5s ease;
-    background-color: grey;
-    cursor: pointer;
+    p, h3 {
+      margin: 0;
+      padding: 0;
+    }
+
+    p {
+      margin-left: 15px;
+    }
   }
 }

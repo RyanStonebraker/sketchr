@@ -2,13 +2,19 @@
 {% block title %}sketchr{% endblock %}
 {% block body %}
 
-  <section class="natural-lang">
-    <div>
-      <h1>></h1>
-      <textarea type="text" name="natlang"></textarea>
-      <h1><</h1>
-    </div>
-    <button type="submit" name="button">generate</button>
-  </section>
+  <form id="userInput" action="/" method="post" autocomplete="off">
+    <section class="natural-lang">
+      <div>
+        <h1>></h1>
+        <textarea type="text" name="natlang">{{ output }}</textarea>
+        <h1><</h1>
+      </div>
+      <section class="info">
+          <h3>Output:</h3>
+          <p>{{ output }}</p>
+      </section>
+      <button type="submit" name="button">generate</button>
+    </section>
+  </form>
 
 {% endblock %}

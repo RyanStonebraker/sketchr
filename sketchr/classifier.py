@@ -60,18 +60,18 @@ class Classifier():
     def classifyDescriptors(self, descriptors):
         classifiedDescriptors = {}
         pastRef = False
-        classifiedDescriptors["color"] = []
-        classifiedDescriptors["size"] = []
-        classifiedDescriptors["shape"] = []
+        classifiedDescriptors["color"] = set()
+        classifiedDescriptors["size"] = set()
+        classifiedDescriptors["shape"] = set()
         for descriptor in descriptors:
             if descriptor.lower() in self.pronouns:
                 pastRef = True
             elif descriptor.lower() in self.colors:
-                classifiedDescriptors["color"].append(descriptor)
+                classifiedDescriptors["color"].add(descriptor)
             elif descriptor.lower() in self.sizes:
-                classifiedDescriptors["size"].append(descriptor)
+                classifiedDescriptors["size"].add(descriptor)
             elif descriptor.lower() in self.shapes:
-                classifiedDescriptors["shape"].append(descriptor)
+                classifiedDescriptors["shape"].add(descriptor)
         return (classifiedDescriptors, pastRef)
 
     def classify(self, query):
@@ -86,8 +86,7 @@ class Classifier():
                 else:
                     if pastRef:
                         for propertyName, props in self.subjects[subject][-1].items():
-                            props += descriptors[propertyName]
-                            print(propertyName, props)
+                            self.subjects[subject][-1][propertyName] = props.union(descriptors[propertyName])
                     else:
                         self.subjects[subject].append(descriptors)
         print(self.subjects)

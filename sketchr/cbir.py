@@ -26,4 +26,4 @@ class CBIR():
 
 if __name__ == "__main__":
     cbir =  CBIR()
-    print(cbir.retrieveImage("car"))
+    print(cbir.retrieveImage(input("Enter item to get picture: ")))

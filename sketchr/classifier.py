@@ -77,6 +77,7 @@ class Classifier():
     def classify(self, query):
         doc = self.nlp(query)
         for i, sentence in enumerate(doc.sents):
+            # TODO: match other patterns for descriptors (ex. the dog is BIG. ), could do this by identifying non-matched descriptors in a sentence w/subject.
             for chunk in sentence.noun_chunks:
                 subject = chunk.root.text
                 descriptors = [word.text for word in chunk if word.text != subject]

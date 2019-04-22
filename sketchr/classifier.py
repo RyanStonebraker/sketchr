@@ -14,7 +14,8 @@ import re
 #             "modifiers": {
 #                 "color": [],
 #                 "shape": [],
-#                 "size": []
+#                 "size": [],
+#                 "quantity": 1
 #             },
 #             "placement": {
 #                 "rel": "origin", # ex. item is next to door, position rel to door
@@ -46,7 +47,7 @@ class Classifier():
             "backgrounds": []
         }
         self.subjects = {}
-        self.pronouns = ["the", "it", "that", "his", "hers", "theirs"]
+        self.referenceWords = ["the", "it", "that", "his", "hers", "theirs"]
         self.colors = ["red", "green", "yellow", "blue"]
         self.sizes = ["big", "large", "small", "medium"]
         self.shapes = ["narrow", "wide", "circular", "rectangular"]
@@ -67,36 +68,56 @@ class Classifier():
         classifiedDescriptors["color"] = set()
         classifiedDescriptors["size"] = set()
         classifiedDescriptors["shape"] = set()
+        classifiedDescriptors["quantity"] = 1
+        classifiedDescriptors["entity"] = None
         for descriptor in descriptors:
-            if descriptor.lower() in self.pronouns:
+            if descriptor.text.lower() in self.referenceWords:
                 pastRef = True
-            elif descriptor.lower() in self.colors:
+            elif descriptor.text.lower() in self.colors:
                 classifiedDescriptors["color"].add(descriptor)
-            elif descriptor.lower() in self.sizes:
+            elif descriptor.text.lower() in self.sizes:
                 classifiedDescriptors["size"].add(descriptor)
-            elif descriptor.lower() in self.shapes:
+            elif descriptor.text.lower() in self.shapes:
                 classifiedDescriptors["shape"].add(descriptor)
+            elif descriptor.pos_ == "NUM":
+                classifiedDescriptors["quantity"] = descriptor.text
         return (classifiedDescriptors, pastRef)
 
-    def addSubjectDescriptors(self, subject, descriptors):
+    def addSubjectDescriptors(self, subject, descriptors, subjectEntType=None):
         descriptors, pastRef = self.classifyDescriptors(descriptors)
         if subject not in self.subjects:
             self.subjects[subject] = [descriptors]
         else:
+            # TODO: If past ref and referring to multiple quantities, then get lemma of subject and modify all subjects being referred to
             if pastRef:
                 for propertyName, props in self.subjects[subject][-1].items():
-                    self.subjects[subject][-1][propertyName] = props.union(descriptors[propertyName])
+                    if isinstance(props, set):
+                        self.subjects[subject][-1][propertyName] = props.union(descriptors[propertyName])
             else:
                 self.subjects[subject].append(descriptors)
+        if subjectEntType:
+            for individual in self.subjects[subject]:
+                if not individual["entity"]:
+                    individual["entity"] = subjectEntType
+
+    def addSubjectsToScene(self):
+        for subject, matches in self.subjects.items():
+            for match in matches:
+                appendTo = "objects"
+                if match["entity"] in ["GPE", "LOC", "EVENT", "FAC"]:
+                    appendTo = "backgrounds"
+                self.scene[appendTo].append({
+                    "subject": subject,
+                    "modifiers": match
+                })
 
     def classify(self, query):
         doc = self.nlp(query)
         for i, sentence in enumerate(doc.sents):
-            # TODO: match other patterns for descriptors (ex. the dog is BIG. ), could do this by identifying non-matched descriptors in a sentence w/subject.
             for chunk in sentence.noun_chunks:
                 subject = chunk.root.text
-                descriptors = [word.text for word in chunk if word.text != subject]
-                self.addSubjectDescriptors(subject, descriptors)
+                descriptors = [word for word in chunk if word.text != subject]
+                self.addSubjectDescriptors(subject, descriptors, chunk.root.ent_type_)
         for subject in self.subjects:
             pattern = [{'POS': 'DET', 'OP': '?'}, {'POS': 'ADJ', 'OP': '*'}, {'LOWER': subject}, {'LEMMA': 'be'}, {'POS': 'ADJ'}]
             self.matcher.add(subject, None, pattern)
@@ -111,14 +132,13 @@ class Classifier():
                 if skipMatch:
                     continue
                 matchedRanges.append((start, end))
-                self.addSubjectDescriptors(subject, [token.text for token in doc[start:end] if token.text != subject])
+                self.addSubjectDescriptors(subject, [token for token in doc[start:end] if token.text != subject])
             self.matcher.remove(subject)
-        print(self.subjects)
-
+        self.addSubjectsToScene()
         return self.scene
 
 
 if __name__ == "__main__":
     classifier = Classifier()
-    query = "A yellow dog is chasing a car in Canada. A red dog is walking. The red dog is large."
-    classifier.classify(query)
+    query = "A yellow dog is chasing a car in Canada. A red dog is walking. The red dog is large. 2 dogs ran."
+    print(classifier.classify(query))

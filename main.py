@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, Markup
 from sketchr import classifier
+from sketchr import visualizer
 import pprint
 
 app = Flask(__name__)
@@ -15,6 +16,8 @@ def home():
             if input == "natlang":
                 query = value
         output = classifyEngine.classify(query)
+        visualEngine = visualizer.Visualizer(outpur)
+        # visualEngine.generate()
 
     return render_template("main.html", output=Markup(pprint.pformat(output, indent=4)), input=query)
 

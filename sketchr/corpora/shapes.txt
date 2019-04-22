@@ -1,0 +1,12 @@
+circle
+circular
+square
+oval
+rectangle
+rectangular
+triangle
+triangular
+hexagon
+hexagonal
+pentagon
+pentagonal

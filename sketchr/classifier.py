@@ -8,7 +8,7 @@ import re
 import random
 
 class Classifier():
-    def __init__(self, colorFile="corpora/colors.csv", sizeFile="corpora/sizes.txt"):
+    def __init__(self, colorFile="corpora/colors.csv", sizeFile="corpora/sizes.txt", shapeFile="corpora/shapes.txt"):
         self.query = ""
         self.nlp = spacy.load('en')
         self.matcher = Matcher(self.nlp.vocab)
@@ -29,7 +29,9 @@ class Classifier():
         with open(sizeFile, "r") as sizeReader:
             self.sizes = [size.strip().lower() for size in sizeReader]
 
-        self.shapes = ["narrow", "wide", "circular", "rectangular"]
+        self.shapes = []
+        with open(shapeFile, "r")  as shapeReader:
+            self.shapes = [shape.strip().lower() for shape in shapeReader]
 
     def getBlankObject(self):
         identifiedObject = {}
@@ -55,14 +57,14 @@ class Classifier():
         classifiedDescriptors["quantity"] = 1
         classifiedDescriptors["entity"] = None
         for descriptor in descriptors:
-            if descriptor.text.lower() in self.referenceWords:
+            if descriptor.lemma_.lower() in self.referenceWords:
                 pastRef = True
             elif descriptor.text.lower() in self.colors:
                 classifiedDescriptors["color"].add(self.colors[descriptor.text.lower()])
-            elif descriptor.text.lower() in self.sizes:
+            elif descriptor.lemma_.lower() in self.sizes:
                 classifiedDescriptors["size"].add(descriptor.lemma_)
-            elif descriptor.text.lower() in self.shapes:
-                classifiedDescriptors["shape"].add(descriptor.text)
+            elif descriptor.lemma_.lower() in self.shapes:
+                classifiedDescriptors["shape"].add(descriptor.lemma_)
             elif descriptor.pos_ == "NUM":
                 classifiedDescriptors["quantity"] = descriptor.text
         return (classifiedDescriptors, pastRef)
@@ -102,7 +104,7 @@ class Classifier():
             if not object["modifiers"]["color"]:
                 # TODO: Make this better by finding n-grams of adjectives that commonly describe nouns and selecting from these
                 object["modifiers"]["color"] = {self.colors[random.choice(list(self.colors))]}
-            print(object)
+            # print(object)
 
 
     def classify(self, query):

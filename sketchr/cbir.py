@@ -46,6 +46,7 @@ class CBIR():
                 cacheWriter.write("{0}, {1}\n".format(name, url))
 
     def retrieveImage(self, name):
+        name = name.lower().strip()
         if name in self.cache:
             if self.checkUrl(self.cache[name]):
                 return self.cache[name]

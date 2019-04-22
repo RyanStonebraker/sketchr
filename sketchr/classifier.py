@@ -5,39 +5,10 @@ from spacy.matcher import Matcher
 from spacy.lemmatizer import Lemmatizer
 from spacy.lang.en import LEMMA_INDEX, LEMMA_EXC, LEMMA_RULES
 import re
-
-# Structure
-# {
-#     "objects": [
-#         {
-#             "subject": "",
-#             "modifiers": {
-#                 "color": [],
-#                 "shape": [],
-#                 "size": [],
-#                 "quantity": 1
-#             },
-#             "placement": {
-#                 "rel": "origin", # ex. item is next to door, position rel to door
-#                 "x": 0, # relative to rel
-#                 "y": 0, # relative to rel
-#                 "z": 0 # z-index above items
-#             }
-#         }
-#     ],
-#     "backgrounds": [
-#         {
-#         "subject": "",
-#         "modifiers": [
-#             "color": [],
-#             "shape": [],
-#             "size": []
-#         }
-#     ]
-# }
+import random
 
 class Classifier():
-    def __init__(self):
+    def __init__(self, colorFile="corpora/colors.csv"):
         self.query = ""
         self.nlp = spacy.load('en')
         self.matcher = Matcher(self.nlp.vocab)
@@ -48,7 +19,16 @@ class Classifier():
         }
         self.subjects = {}
         self.referenceWords = ["the", "it", "that", "his", "hers", "theirs"]
-        self.colors = ["red", "green", "yellow", "blue"]
+        self.colors = {}
+        with open(colorFile, "r") as colorReader:
+            firstLine = True
+            for line in colorReader:
+                if firstLine:
+                    firstLine = False
+                    continue
+                colorValue = line.split(",")
+                self.colors[colorValue[0].lower()] = colorValue[1].strip("\n")
+
         self.sizes = ["big", "large", "small", "medium"]
         self.shapes = ["narrow", "wide", "circular", "rectangular"]
 
@@ -63,6 +43,11 @@ class Classifier():
         return identifiedObject
 
     def classifyDescriptors(self, descriptors):
+        # for i, descriptor in enumerate(descriptors):
+            # if descriptor.pos_ != "SUBJ":
+            #     if hasattr(descriptor, "pos_") and descriptor.pos_ == "ADJ" and (descriptors[i-1].pos_ == "ADJ" or descriptors[i-1].pos_ == "NOUN"):
+            #         descriptors[i-1].text += " " + descriptor.text
+            #         del descriptors[i]
         classifiedDescriptors = {}
         pastRef = False
         classifiedDescriptors["color"] = set()
@@ -74,16 +59,17 @@ class Classifier():
             if descriptor.text.lower() in self.referenceWords:
                 pastRef = True
             elif descriptor.text.lower() in self.colors:
-                classifiedDescriptors["color"].add(descriptor)
+                classifiedDescriptors["color"].add(self.colors[descriptor.text.lower()])
             elif descriptor.text.lower() in self.sizes:
-                classifiedDescriptors["size"].add(descriptor)
+                classifiedDescriptors["size"].add(descriptor.text)
             elif descriptor.text.lower() in self.shapes:
-                classifiedDescriptors["shape"].add(descriptor)
+                classifiedDescriptors["shape"].add(descriptor.text)
             elif descriptor.pos_ == "NUM":
                 classifiedDescriptors["quantity"] = descriptor.text
         return (classifiedDescriptors, pastRef)
 
     def addSubjectDescriptors(self, subject, descriptors, subjectEntType=None):
+        subject = self.lemmatizer(subject, "NOUN")[0]
         descriptors, pastRef = self.classifyDescriptors(descriptors)
         if subject not in self.subjects:
             self.subjects[subject] = [descriptors]
@@ -106,10 +92,19 @@ class Classifier():
                 appendTo = "objects"
                 if match["entity"] in ["GPE", "LOC", "EVENT", "FAC"]:
                     appendTo = "backgrounds"
+                match.pop("entity", None)
                 self.scene[appendTo].append({
                     "subject": subject,
                     "modifiers": match
                 })
+
+    def inferContext(self):
+        for object in self.scene["objects"]:
+            if not object["modifiers"]["color"]:
+                # TODO: Make this better by finding n-grams of adjectives that commonly describe nouns and selecting from these
+                object["modifiers"]["color"] = {self.colors[random.choice(list(self.colors))]}
+            print(object)
+
 
     def classify(self, query):
         doc = self.nlp(query)
@@ -135,10 +130,11 @@ class Classifier():
                 self.addSubjectDescriptors(subject, [token for token in doc[start:end] if token.text != subject])
             self.matcher.remove(subject)
         self.addSubjectsToScene()
+        self.inferContext()
         return self.scene
 
 
 if __name__ == "__main__":
     classifier = Classifier()
-    query = "A yellow dog is chasing a car in Canada. A red dog is walking. The red dog is large. 2 dogs ran."
-    print(classifier.classify(query))
+    query = "An amarillo yellow dog is chasing a car in Canada. A red dog is walking. The red dog is large. 2 dogs ran."
+    classifier.classify(query)

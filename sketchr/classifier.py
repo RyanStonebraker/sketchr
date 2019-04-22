@@ -8,7 +8,7 @@ import re
 import random
 
 class Classifier():
-    def __init__(self, colorFile="corpora/colors.csv"):
+    def __init__(self, colorFile="corpora/colors.csv", sizeFile="corpora/sizes.txt"):
         self.query = ""
         self.nlp = spacy.load('en')
         self.matcher = Matcher(self.nlp.vocab)
@@ -21,15 +21,14 @@ class Classifier():
         self.referenceWords = ["the", "it", "that", "his", "hers", "theirs"]
         self.colors = {}
         with open(colorFile, "r") as colorReader:
-            firstLine = True
             for line in colorReader:
-                if firstLine:
-                    firstLine = False
-                    continue
                 colorValue = line.split(",")
                 self.colors[colorValue[0].lower()] = colorValue[1].strip("\n")
 
-        self.sizes = ["big", "large", "small", "medium"]
+        self.sizes = []
+        with open(sizeFile, "r") as sizeReader:
+            self.sizes = [size.strip().lower() for size in sizeReader]
+
         self.shapes = ["narrow", "wide", "circular", "rectangular"]
 
     def getBlankObject(self):
@@ -61,7 +60,7 @@ class Classifier():
             elif descriptor.text.lower() in self.colors:
                 classifiedDescriptors["color"].add(self.colors[descriptor.text.lower()])
             elif descriptor.text.lower() in self.sizes:
-                classifiedDescriptors["size"].add(descriptor.text)
+                classifiedDescriptors["size"].add(descriptor.lemma_)
             elif descriptor.text.lower() in self.shapes:
                 classifiedDescriptors["shape"].add(descriptor.text)
             elif descriptor.pos_ == "NUM":
@@ -136,5 +135,5 @@ class Classifier():
 
 if __name__ == "__main__":
     classifier = Classifier()
-    query = "An amarillo yellow dog is chasing a car in Canada. A red dog is walking. The red dog is large. 2 dogs ran."
+    query = "An amarillo yellow dog is chasing a car in Canada. A red dog is walking. The red dog is humungous. 2 dogs ran."
     classifier.classify(query)

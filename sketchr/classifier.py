@@ -84,14 +84,14 @@ class Classifier():
                 self.subjects[subject].append(descriptors)
         if subjectEntType:
             for individual in self.subjects[subject]:
-                if not individual["entity"]:
+                if "entity" not in individual or not individual["entity"]:
                     individual["entity"] = subjectEntType
 
     def addSubjectsToScene(self):
         for subject, matches in self.subjects.items():
             for match in matches:
                 appendTo = "objects"
-                if match["entity"] in ["GPE", "LOC", "EVENT", "FAC"]:
+                if "entity" in match and match["entity"] in ["GPE", "LOC", "EVENT", "FAC"]:
                     appendTo = "backgrounds"
                 match.pop("entity", None)
                 self.scene[appendTo].append({
@@ -108,6 +108,11 @@ class Classifier():
 
 
     def classify(self, query):
+        self.scene = {
+            "objects": [],
+            "backgrounds": []
+        }
+        self.subjects = {}
         doc = self.nlp(query)
         for i, sentence in enumerate(doc.sents):
             for chunk in sentence.noun_chunks:

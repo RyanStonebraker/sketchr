@@ -6,3 +6,4 @@ dog, https://www.akc.org/wp-content/themes/akc/component-library/assets/img/welc
 coffee, http://farm4.static.flickr.com/3089/2587478434_3f26203c89.jpg
 anchorage, https://media2.govtech.com/images/940*630/shutterstock_5794634622.jpg
 car, http://farm3.static.flickr.com/2053/2166599298_80c82ca26d.jpg
+street, http://farm4.static.flickr.com/3553/3608739174_bbf66b65c0.jpg

@@ -1,11 +1,11 @@
-import classifier
-import cbir
+from . import classifier
+from . import cbir
 import uuid
 
 class Visualizer():
-    def __init__(self, scene):
+    def __init__(self, scene, wordMapping="corpora/wordMapping.txt", cache="corpora/cache.txt"):
         self.scene = scene
-        self.cbir = cbir.CBIR()
+        self.cbir = cbir.CBIR(wordMapping, cache)
         self.dom = self.initDom()
 
     def initDom(self):
@@ -59,8 +59,8 @@ class Visualizer():
     def addImage(self, src, pos, style={}):
         id = uuid.uuid4()
         props = "src='{}'".format(src)
-        style["top"] = pos["x"]
-        style["left"] = pos["y"]
+        style["top"] = str(pos["x"]) + "px"
+        style["left"] = str(pos["y"]) + "px"
         style["z-index"] = pos["z"]
         props += self.getStyleString(style)
         self.queryDom("html body")["inner"][id] = self.createElement("img", props)
@@ -68,11 +68,29 @@ class Visualizer():
     def generate(self):
         for i, background in enumerate(self.scene["backgrounds"]):
             backgroundImage = self.cbir.retrieveImage(background["subject"])
-            self.addImage(backgroundImage, {"x": 0, "y": 0, "z": 0})
-            # self.queryDom("html body")["inner"]["background" + str(i)] = self.createElement("img", "src='{}'".format(backgroundImage))
+            pos = {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+            style = {
+                "width": "100%",
+                "height": "100%"
+            }
+            self.addImage(backgroundImage, pos, style)
         for i, object in enumerate(self.scene["objects"]):
             objectImage = self.cbir.retrieveImage(object["subject"])
-        print(self.getStructure(self.dom))
+            pos = {
+                "x": i * 200,
+                "y": i * 100,
+                "z": 1
+            }
+            style = {
+                "width": "100px",
+                "height": "100px"
+            }
+            self.addImage(objectImage, pos, style)
+        return self.getStructure(self.dom)
 
 if __name__ == "__main__":
     classifyEngine = classifier.Classifier()

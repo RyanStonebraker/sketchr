@@ -59,8 +59,8 @@ class Visualizer():
     def addImage(self, src, pos, style={}):
         id = uuid.uuid4()
         props = "src='{}'".format(src)
-        style["top"] = str(pos["x"]) + "px"
-        style["left"] = str(pos["y"]) + "px"
+        style["top"] = str(pos["y"]) + "px"
+        style["left"] = str(pos["x"]) + "px"
         style["z-index"] = pos["z"]
         props += self.getStyleString(style)
         self.queryDom("html body")["inner"][id] = self.createElement("img", props)
@@ -74,22 +74,23 @@ class Visualizer():
                 "z": 0
             }
             style = {
-                "width": "100%",
-                "height": "100%"
+                "width": "1000px",
+                "height": "500px"
             }
             self.addImage(backgroundImage, pos, style)
         for i, object in enumerate(self.scene["objects"]):
             objectImage = self.cbir.retrieveImage(object["subject"])
-            pos = {
-                "x": i * 200,
-                "y": i * 100,
-                "z": 1
-            }
             style = {
                 "width": "100px",
                 "height": "100px"
             }
-            self.addImage(objectImage, pos, style)
+            for j in range(0, int(object["modifiers"]["quantity"])):
+                pos = {
+                    "x": i * 200 + j * 100,
+                    "y": 400,
+                    "z": 1
+                }
+                self.addImage(objectImage, pos, style)
         return self.getStructure(self.dom)
 
 if __name__ == "__main__":

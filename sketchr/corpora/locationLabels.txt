@@ -1,2 +1,16 @@
 porch
 street
+junction
+dining room
+airport
+mountain
+forest
+resort
+freeway
+lake
+ocean
+beach
+highway
+sky
+tower
+venue

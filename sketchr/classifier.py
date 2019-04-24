@@ -6,11 +6,15 @@ from spacy.lemmatizer import Lemmatizer
 from spacy.lang.en import LEMMA_INDEX, LEMMA_EXC, LEMMA_RULES
 import re
 import random
+import sys
 
 class Classifier():
-    def __init__(self, colorFile="corpora/colors.csv", sizeFile="corpora/sizes.txt", shapeFile="corpora/shapes.txt"):
+    def __init__(self, colorFile="corpora/colors.csv", sizeFile="corpora/sizes.txt", shapeFile="corpora/shapes.txt", nerModel="models/nerModel"):
         self.query = ""
         self.nlp = spacy.load('en')
+        ner = spacy.load(nerModel).pipeline[0][1]
+        self.nlp.replace_pipe("ner", ner)
+
         self.matcher = Matcher(self.nlp.vocab)
         self.lemmatizer = Lemmatizer(LEMMA_INDEX, LEMMA_EXC, LEMMA_RULES)
         self.scene = {

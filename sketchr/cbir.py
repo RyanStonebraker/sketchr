@@ -59,7 +59,7 @@ class CBIR():
         for id, freq in wordIds:
             imagesUrl = self.imageNetUrl + id
             response = requests.get(imagesUrl)
-            if response.text:
+            if response.text.strip():
                 urls = response.text.split("\n")
                 workingUrl = self.getWorkingUrl(urls)
                 self.writeToCache(name, workingUrl)

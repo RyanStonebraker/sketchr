@@ -25,17 +25,14 @@ def getTrainingData(dataFile="corpora/nerTrainingData.txt", locFile="corpora/loc
 
 def train(trainingData, model=None, outputDir=None, trainingIteration=100, testDataFile="corpora/unlabeledData.txt"):
     nlp = spacy.load(model) if model else spacy.blank("en")
-
     if "ner" not in nlp.pipe_names:
         ner = nlp.create_pipe("ner")
         nlp.add_pipe(ner, last=True)
     else:
         ner = nlp.get_pipe("ner")
-
     for _, annotations in trainingData:
         for ent in annotations.get("entities"):
             ner.add_label(ent[2])
-
     other_pipes = [pipe for pipe in nlp.pipe_names if pipe != "ner"]
     with nlp.disable_pipes(*other_pipes):
         if model is None:
@@ -48,13 +45,11 @@ def train(trainingData, model=None, outputDir=None, trainingIteration=100, testD
                 texts, annotations = zip(*batch)
                 nlp.update(texts, annotations, drop=0.5, losses=losses)
             print("Losses", losses)
-
     if outputDir:
         outputDir = Path(outputDir)
         if not outputDir.exists():
             outputDir.mkdir()
         nlp.to_disk(outputDir)
-
     with open(testDataFile, "r") as testReader:
         for sentence in testReader:
             sentence = sentence.strip()

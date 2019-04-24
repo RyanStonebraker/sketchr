@@ -8,12 +8,16 @@ import re
 import random
 import sys
 
+# TODO: Add pipeline with a custom model for pastRef
+
 class Classifier():
-    def __init__(self, colorFile="corpora/colors.csv", sizeFile="corpora/sizes.txt", shapeFile="corpora/shapes.txt", nerModel="models/nerModel"):
+    def __init__(self, inferenceEngine, colorFile="corpora/colors.csv", sizeFile="corpora/sizes.txt", shapeFile="corpora/shapes.txt", nerModel="models/nerModel"):
         self.query = ""
         self.nlp = spacy.load('en')
         ner = spacy.load(nerModel).pipeline[0][1]
         self.nlp.replace_pipe("ner", ner)
+
+        self.inferenceEngine = inferenceEngine
 
         self.matcher = Matcher(self.nlp.vocab)
         self.lemmatizer = Lemmatizer(LEMMA_INDEX, LEMMA_EXC, LEMMA_RULES)
@@ -83,7 +87,7 @@ class Classifier():
             if pastRef:
                 for propertyName, props in self.subjects[subject][-1].items():
                     if isinstance(props, set):
-                        self.subjects[subject][-1][propertyName] = props.union(descriptors[propertyName])
+                        self.subjects[subject][-1][propertyName] = self.subjects[subject][-1][propertyName].union(descriptors[propertyName])
             else:
                 self.subjects[subject].append(descriptors)
         if subjectEntType:
@@ -105,9 +109,14 @@ class Classifier():
 
     def inferContext(self):
         for object in self.scene["objects"]:
-            if not object["modifiers"]["color"]:
+            descriptiveWords = self.inferenceEngine.getDescriptiveWords(object["subject"])
+            for word in descriptiveWords:
+                word = word.lower()
+                if not object["modifiers"]["color"] and word in self.colors:
+                    object["modifiers"]["color"] = {self.colors[word]}
+            print(object)
                 # TODO: Make this better by finding n-grams of adjectives that commonly describe nouns and selecting from these
-                object["modifiers"]["color"] = {self.colors[random.choice(list(self.colors))]}
+                # object["modifiers"]["color"] = {self.colors[random.choice(list(self.colors))]}
             # print(object)
 
 
@@ -123,28 +132,33 @@ class Classifier():
                 subject = chunk.root.text
                 descriptors = [word for word in chunk if word.text != subject]
                 self.addSubjectDescriptors(subject, descriptors, chunk.root.ent_type_)
-        for subject in self.subjects:
-            pattern = [{'POS': 'DET', 'OP': '?'}, {'POS': 'ADJ', 'OP': '*'}, {'LOWER': subject}, {'LEMMA': 'be'}, {'POS': 'ADJ'}]
-            self.matcher.add(subject, None, pattern)
-            matches = self.matcher(doc)
-            matchedRanges = []
-            for match_id, start, end in self.matcher(doc):
-                skipMatch = False
-                for prevStart, prevEnd in matchedRanges:
-                    if start >= prevStart and end <= prevEnd:
-                        skipMatch = True
-                        break
-                if skipMatch:
-                    continue
-                matchedRanges.append((start, end))
-                self.addSubjectDescriptors(subject, [token for token in doc[start:end] if token.text != subject])
-            self.matcher.remove(subject)
+
+            doc = self.nlp(sentence.text)
+            for subject in self.subjects:
+                pattern = [{'POS': 'DET', 'OP': '?'}, {'POS': 'ADJ', 'OP': '*'}, {'LOWER': subject}, {'LEMMA': 'be'}, {'POS': 'ADJ'}]
+                self.matcher.add(subject, None, pattern)
+                matches = self.matcher(doc)
+                matchedRanges = []
+                for match_id, start, end in self.matcher(doc):
+                    skipMatch = False
+                    for prevStart, prevEnd in matchedRanges:
+                        if start >= prevStart and end <= prevEnd:
+                            skipMatch = True
+                            break
+                    if skipMatch:
+                        continue
+                    matchedRanges.append((start, end))
+                    self.addSubjectDescriptors(subject, [token for token in doc[start:end] if token.text != subject])
+                self.matcher.remove(subject)
+
         self.addSubjectsToScene()
         self.inferContext()
         return self.scene
 
 
 if __name__ == "__main__":
-    classifier = Classifier()
-    query = "An amarillo yellow dog is chasing a car in Canada. A red dog is walking. The red dog is humungous. 2 dogs ran."
+    import inferenceEngine
+    inferenceEngine = inferenceEngine.InferenceEngine(modelFile="models/inference/large")
+    classifier = Classifier(inferenceEngine)
+    query = "A red dog is walking. The dog is large. 2 dogs are running."
     classifier.classify(query)

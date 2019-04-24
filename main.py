@@ -29,5 +29,10 @@ def home():
     return render_template("main.html", output=Markup(pprint.pformat(output, indent=4)), input=query, visual=Markup(scene))
 
 if __name__ == "__main__":
-    classifyEngine = classifier.Classifier("sketchr/corpora/colors.csv", "sketchr/corpora/sizes.txt", "sketchr/corpora/shapes.txt", "sketchr/models/nerModel")
+    inferenceEngine = InferenceEngine(modelFile="sketchr/models/inference/large")
+    classifyEngine = classifier.Classifier(inferenceEngine,
+        "sketchr/corpora/colors.csv",
+        "sketchr/corpora/sizes.txt",
+        "sketchr/corpora/shapes.txt",
+        "sketchr/models/nerModel")
     app.run(debug=True)

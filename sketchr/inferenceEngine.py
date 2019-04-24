@@ -109,20 +109,13 @@ class InferenceEngine():
                     modelWriter.write("{0},{1}, ".format(descriptor, freq))
                 modelWriter.write("\n")
 
-def main(*corpora, model=None, outFile=None, interactive=False):
-    inferenceEngine = InferenceEngine(corpora, outFile=outFile, modelFile=model)
-    if interactive:
-        while True:
-            user = input("Enter Word: ")
-            print(inferenceEngine.getDescriptiveWords(user))
-
 if __name__ == "__main__":
     inferenceEngine = InferenceEngine(
         "corpora/mobydick.txt",
-        "corpora/sherlockholmes.txt", 
+        "corpora/sherlockholmes.txt",
         outFile="models/inference/large"
     )
-    # inferenceEngine = InferenceEngine("corpora/mobydick.txt", modelFile="models/inference/large")
+    # inferenceEngine = InferenceEngine(modelFile="models/inference/large")
     while True:
         user = input("Enter Word: ")
         print(inferenceEngine.getDescriptiveWords(user))

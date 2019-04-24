@@ -1,13 +1,39 @@
 import spacy
 import random
 from collections import OrderedDict
+import plac
 
 class InferenceEngine():
-    def __init__(self, *corpora):
+    def __init__(self, *corpora, modelFile=None, outFile=None):
         self.nlp = spacy.load("en")
         self.descriptions = {}
+        self.outFile = outFile
+        if modelFile:
+            self.loadModel(modelFile)
+        else:
+            print("Building description model using:", ", ".join(corpora))
+            self.trainModel(corpora)
+            if outFile:
+                self.writeOutModel()
+
+    def loadModel(self, modelFile):
+        with open(modelFile, "r") as modelReader:
+            for line in modelReader:
+                line = line.strip().strip(",")
+                wordDescriptors = line.split(", ")
+                mainWord = wordDescriptors[0]
+                self.descriptions[mainWord] = {}
+                for descriptorFreq in wordDescriptors[1:]:
+                    descriptorFreq = descriptorFreq.split(",")
+                    if len(descriptorFreq) > 2:
+                        print("Invalid Descriptor:", descriptorFreq)
+                        continue
+                    descriptor, freq = descriptorFreq
+                    self.descriptions[mainWord][descriptor] = int(freq)
+
+    def trainModel(self, corpora):
         for corpusFile in corpora:
-            with open(corpusFile) as corpusReader:
+            with open(corpusFile, "r") as corpusReader:
                 for i, _ in enumerate(corpusReader):
                     pass
             fileLineCount = i + 1
@@ -26,6 +52,7 @@ class InferenceEngine():
                     if percentComplete - lastPercent > 0.25:
                         print("Processing: {0} - {1}%".format(corpusFile, int(percentComplete * 10000)/100))
                         lastPercent = float(currentLineCount/fileLineCount)
+
 
     def classifyParagraph(self, paragraph):
         doc = self.nlp(paragraph)
@@ -75,8 +102,16 @@ class InferenceEngine():
                 descriptions.append(adjective)
         return descriptions
 
+    def writeOutModel(self):
+        with open(self.outFile, "w") as modelWriter:
+            for word, descriptionWords in self.descriptions.items():
+                modelWriter.write(word + ", ")
+                for descriptor, freq in descriptionWords.items():
+                    modelWriter.write("{0},{1}, ".format(descriptor, freq))
+                modelWriter.write("\n")
+
 if __name__ == "__main__":
-    inferenceEngine = InferenceEngine("corpora/mobydick.txt")
+    inferenceEngine = InferenceEngine("corpora/mobydick.txt", modelFile="models/inference/mobyDickModel", outFile="models/inference/mobyDickModel")
     while True:
         user = input("Enter Word: ")
         print(inferenceEngine.getDescriptiveWords(user))

@@ -50,7 +50,7 @@ class InferenceEngine():
 
                     percentComplete = currentLineCount/fileLineCount
                     if percentComplete - lastPercent > 0.25:
-                        print("Processing: {0} - {1}%".format(corpusFile, int(percentComplete * 10000)/100))
+                        print("Processing: {0} -- {1}%".format(corpusFile, int(percentComplete * 10000)/100))
                         lastPercent = float(currentLineCount/fileLineCount)
 
 
@@ -59,7 +59,7 @@ class InferenceEngine():
         for chunk in doc.noun_chunks:
             adjBuffer = []
             for word in chunk:
-                if word.pos_ == "ADJ":
+                if word.pos_ == "ADJ" and "," not in word.text:
                     adjBuffer.append(word.text)
                 elif word.pos_ == "NOUN":
                     self.addDescriptors(word.lemma_, adjBuffer)
@@ -111,7 +111,8 @@ class InferenceEngine():
                 modelWriter.write("\n")
 
 if __name__ == "__main__":
-    inferenceEngine = InferenceEngine("corpora/mobydick.txt", modelFile="models/inference/mobyDickModel", outFile="models/inference/mobyDickModel")
+    # inferenceEngine = InferenceEngine("corpora/mobydick.txt", outFile="models/inference/mobyDickModel")
+    inferenceEngine = InferenceEngine("corpora/mobydick.txt", modelFile="models/inference/mobyDickModel")
     while True:
         user = input("Enter Word: ")
         print(inferenceEngine.getDescriptiveWords(user))

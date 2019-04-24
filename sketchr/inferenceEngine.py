@@ -7,10 +7,14 @@ class InferenceEngine():
         self.nlp = spacy.load("en")
         self.descriptions = {}
         for corpusFile in corpora:
+            with open(corpusFile) as corpusReader:
+                for i, _ in enumerate(corpusReader):
+                    pass
+            fileLineCount = i + 1
             with open(corpusFile, "r") as corpusReader:
                 paragraph = ""
-                count = 0
-                for line in corpusReader:
+                lastPercent = 0.0
+                for currentLineCount, line in enumerate(corpusReader):
                     line = line.lower().strip()
                     if line:
                         paragraph += " {}".format(line)
@@ -18,9 +22,10 @@ class InferenceEngine():
                         self.classifyParagraph(paragraph)
                         paragraph = ""
 
-                    count += 1
-                    if count > 1000:
-                        break
+                    percentComplete = currentLineCount/fileLineCount
+                    if percentComplete - lastPercent > 0.25:
+                        print("Processing: {0} - {1}%".format(corpusFile, int(percentComplete * 10000)/100))
+                        lastPercent = float(currentLineCount/fileLineCount)
 
     def classifyParagraph(self, paragraph):
         doc = self.nlp(paragraph)

@@ -1,5 +1,7 @@
 circle
 circular
+sphere
+spherical
 square
 oval
 rectangle

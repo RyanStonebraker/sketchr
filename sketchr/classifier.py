@@ -114,7 +114,6 @@ class Classifier():
     def inferContext(self):
         for object in self.scene["objects"]:
             descriptiveWords = self.inferenceEngine.getDescriptiveWords(object["subject"])
-
             matchingColors = []
             matchingSizes = []
             for word in descriptiveWords:
@@ -124,7 +123,6 @@ class Classifier():
                     matchingColors.append(self.colors[word])
                 if not object["modifiers"]["size"] and lemma in self.sizes:
                     matchingSizes.append(float(self.sizes[lemma]))
-
             if matchingColors and not object["modifiers"]["color"]:
                 object["modifiers"]["color"] = {random.choice(matchingColors)}
             if matchingSizes and not object["modifiers"]["size"]:
@@ -175,5 +173,5 @@ if __name__ == "__main__":
     import inferenceEngine
     inferenceEngine = inferenceEngine.InferenceEngine(modelFile="models/inference/large")
     classifier = Classifier(inferenceEngine)
-    query = "A red dog is walking. The dog is large. 2 dogs are running."
+    query = "Look at the 5 large whales."
     classifier.classify(query)

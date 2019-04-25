@@ -58,12 +58,20 @@ class Visualizer():
 
     def addImage(self, src, pos, style={}):
         id = uuid.uuid4()
-        props = "src='{}'".format(src)
+        props = ""
         style["top"] = str(pos["y"]) + "px"
         style["left"] = str(pos["x"]) + "px"
         style["z-index"] = pos["z"]
+        if "background" not in style:
+            style["background-image"] = "url(\"{}\")".format(src.strip())
+            style["background-size"] = "cover"
+        else:
+            style["background-size"] = "contain"
+        style["background-position"] = "center"
+        style["background-repeat"] = "no-repeat"
+
         props += self.getStyleString(style)
-        self.queryDom("html body")["inner"][id] = self.createElement("img", props)
+        self.queryDom("html body")["inner"][id] = self.createElement("div", props)
 
     def generate(self):
         for i, background in enumerate(self.scene["backgrounds"]):
@@ -80,14 +88,26 @@ class Visualizer():
             self.addImage(backgroundImage, pos, style)
         for i, object in enumerate(self.scene["objects"]):
             objectImage = self.cbir.retrieveImage(object["subject"])
+
+            sizeMod = 1
+            if object["modifiers"]["size"]:
+                sizeMod = 0
+                for size in object["modifiers"]["size"]:
+                    sizeMod += size
+                sizeMod /= len(object["modifiers"]["size"])
+
             style = {
-                "width": "100px",
-                "height": "100px"
+                "width": str(200 * sizeMod) + "px",
+                "height": str(200 * sizeMod) + "px"
             }
+            if object["modifiers"]["color"]:
+                style["filter"] = "opacity(0.6) drop-shadow(0 0 0 {})".format(list(object["modifiers"]["color"])[0])
+                style["background"] = "url(\"{}\")".format(objectImage.strip())
+
             for j in range(0, int(object["modifiers"]["quantity"])):
                 pos = {
-                    "x": i * 200 + j * 100,
-                    "y": 400,
+                    "x": i * int(float(style["width"].strip("px"))) + j * 100,
+                    "y": 500 - int(float(style["height"].strip("px"))) - 10,
                     "z": 1
                 }
                 self.addImage(objectImage, pos, style)

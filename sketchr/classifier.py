@@ -88,6 +88,7 @@ class Classifier():
             self.subjects[subject] = [descriptors]
         else:
             # TODO: If past ref and referring to multiple quantities, then get lemma of subject and modify all subjects being referred to
+            # TODO: Compare descriptors to existing descriptors and choose the one that best fits, preferring the most recent
             if pastRef:
                 for propertyName, props in self.subjects[subject][-1].items():
                     if isinstance(props, set):
@@ -127,10 +128,6 @@ class Classifier():
                 object["modifiers"]["color"] = {random.choice(matchingColors)}
             if matchingSizes and not object["modifiers"]["size"]:
                 object["modifiers"]["size"] = {random.choice(matchingSizes)}
-            print(object)
-                # TODO: Make this better by finding n-grams of adjectives that commonly describe nouns and selecting from these
-                # object["modifiers"]["color"] = {self.colors[random.choice(list(self.colors))]}
-            # print(object)
 
 
     def classify(self, query):

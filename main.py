@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, Markup
 from sketchr import classifier
 from sketchr import visualizer
+from sketchr import inferenceEngine
 import pprint
 
 app = Flask(__name__)
@@ -29,7 +30,7 @@ def home():
     return render_template("main.html", output=Markup(pprint.pformat(output, indent=4)), input=query, visual=Markup(scene))
 
 if __name__ == "__main__":
-    inferenceEngine = InferenceEngine(modelFile="sketchr/models/inference/large")
+    inferenceEngine = inferenceEngine.InferenceEngine(modelFile="sketchr/models/inference/large")
     classifyEngine = classifier.Classifier(inferenceEngine,
         "sketchr/corpora/colors.csv",
         "sketchr/corpora/sizes.txt",

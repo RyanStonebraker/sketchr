@@ -78,7 +78,7 @@ class Classifier():
             elif lemma in self.shapes:
                 classifiedDescriptors["shape"].add(lemma)
             elif descriptor.pos_ == "NUM":
-                classifiedDescriptors["quantity"] = descriptor.text
+                classifiedDescriptors["quantity"] = descriptor.lemma_
         return (classifiedDescriptors, pastRef)
 
     def addSubjectDescriptors(self, subject, descriptors, subjectEntType=None):

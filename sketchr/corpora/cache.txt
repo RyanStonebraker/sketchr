@@ -18,3 +18,4 @@ table, http://farm3.static.flickr.com/2625/3762260812_0f34572428.jpg
 carpet, https://4.imimg.com/data4/NY/BJ/MY-23905479/img_9382-500x500.jpg
 hangar, http://farm4.static.flickr.com/3035/2909007406_b72325be43.jpg
 helicopter, https://s3.amazonaws.com/peoplepng/wp-content/uploads/2018/07/24162719/Red-Helicopter-Transparent-Images.png
+world, https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg

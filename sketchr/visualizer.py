@@ -85,6 +85,10 @@ class Visualizer():
                 "width": "1000px",
                 "height": "500px"
             }
+            if background["modifiers"]["color"]:
+                style["filter"] = "opacity(0.6) drop-shadow(0 0 0 {})".format(list(background["modifiers"]["color"])[0])
+                style["background"] = "url(\"{}\")".format(backgroundImage.strip())
+
             self.addImage(backgroundImage, pos, style)
         for i, object in enumerate(self.scene["objects"]):
             objectImage = self.cbir.retrieveImage(object["subject"])

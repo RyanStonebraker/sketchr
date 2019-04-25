@@ -33,9 +33,12 @@ class Classifier():
                 colorValue = line.split(",")
                 self.colors[colorValue[0].lower()] = colorValue[1].strip("\n")
 
-        self.sizes = []
+        self.sizes = {}
         with open(sizeFile, "r") as sizeReader:
-            self.sizes = [size.strip().lower() for size in sizeReader]
+            for line in sizeReader:
+                line = line.strip().lower()
+                sizeValue = line.split(",")
+                self.sizes[sizeValue[0]] = sizeValue[1].strip("\n")
 
         self.shapes = []
         with open(shapeFile, "r")  as shapeReader:
@@ -65,14 +68,15 @@ class Classifier():
         classifiedDescriptors["quantity"] = 1
         classifiedDescriptors["entity"] = None
         for descriptor in descriptors:
-            if descriptor.lemma_.lower() in self.referenceWords:
+            lemma = descriptor.lemma_.lower()
+            if lemma in self.referenceWords:
                 pastRef = True
             elif descriptor.text.lower() in self.colors:
                 classifiedDescriptors["color"].add(self.colors[descriptor.text.lower()])
-            elif descriptor.lemma_.lower() in self.sizes:
-                classifiedDescriptors["size"].add(descriptor.lemma_)
-            elif descriptor.lemma_.lower() in self.shapes:
-                classifiedDescriptors["shape"].add(descriptor.lemma_)
+            elif lemma in self.sizes:
+                classifiedDescriptors["size"].add(float(self.sizes[lemma]))
+            elif lemma in self.shapes:
+                classifiedDescriptors["shape"].add(lemma)
             elif descriptor.pos_ == "NUM":
                 classifiedDescriptors["quantity"] = descriptor.text
         return (classifiedDescriptors, pastRef)
@@ -110,10 +114,21 @@ class Classifier():
     def inferContext(self):
         for object in self.scene["objects"]:
             descriptiveWords = self.inferenceEngine.getDescriptiveWords(object["subject"])
+
+            matchingColors = []
+            matchingSizes = []
             for word in descriptiveWords:
                 word = word.lower()
-                if not object["modifiers"]["color"] and word in self.colors:
-                    object["modifiers"]["color"] = {self.colors[word]}
+                lemma = self.lemmatizer(word, "ADJ")[0]
+                if word in self.colors:
+                    matchingColors.append(self.colors[word])
+                if not object["modifiers"]["size"] and lemma in self.sizes:
+                    matchingSizes.append(float(self.sizes[lemma]))
+
+            if matchingColors and not object["modifiers"]["color"]:
+                object["modifiers"]["color"] = {random.choice(matchingColors)}
+            if matchingSizes and not object["modifiers"]["size"]:
+                object["modifiers"]["size"] = {random.choice(matchingSizes)}
             print(object)
                 # TODO: Make this better by finding n-grams of adjectives that commonly describe nouns and selecting from these
                 # object["modifiers"]["color"] = {self.colors[random.choice(list(self.colors))]}

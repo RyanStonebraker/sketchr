@@ -75,7 +75,7 @@ class InferenceEngine():
                 self.descriptions[noun] = {}
                 self.descriptions[noun][adjective] = 1
 
-    def getDescriptiveWords(self, word, numberWords=None):
+    def getDescriptiveWords(self, word, numberWords=None, percent=None):
         if word not in self.descriptions:
             return []
 
@@ -83,7 +83,7 @@ class InferenceEngine():
         describingWords = OrderedDict(sorted(describingWords.items(), key=lambda w: w[1], reverse=True))
 
         if numberWords is None:
-            numberWords = len(describingWords)
+                numberWords = len(describingWords) if percent is None else int(percent * len(describingWords))
 
         totalAdjectiveCount = 0
         for _, count in describingWords.items():

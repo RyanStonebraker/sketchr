@@ -60,4 +60,4 @@ def train(trainingData, model=None, outputDir=None, trainingIteration=100, testD
 
 if __name__ == "__main__":
     trainingData = getTrainingData()
-    train(trainingData, outputDir="models/nerModel")
+    train(trainingData, outputDir="models/nerModel", trainingIteration=100)

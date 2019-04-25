@@ -14,3 +14,7 @@ ocean, https://boygeniusreport.files.wordpress.com/2017/12/screen-shot-2017-12-2
 whale, https://i.dlpng.com/static/png/312959_thumb.png
 sky, https://upload.wikimedia.org/wikipedia/commons/1/16/Appearance_of_sky_for_weather_forecast%2C_Dhaka%2C_Bangladesh.JPG
 plane, https://images.vexels.com/media/users/3/145794/isolated/preview/7b344efb846a36f9ed32fbb83d5d59ed-plane-ascending-by-vexels.png
+table, http://farm3.static.flickr.com/2625/3762260812_0f34572428.jpg
+carpet, https://4.imimg.com/data4/NY/BJ/MY-23905479/img_9382-500x500.jpg
+hangar, http://farm4.static.flickr.com/3035/2909007406_b72325be43.jpg
+helicopter, https://s3.amazonaws.com/peoplepng/wp-content/uploads/2018/07/24162719/Red-Helicopter-Transparent-Images.png

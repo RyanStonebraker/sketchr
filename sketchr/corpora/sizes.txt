@@ -23,7 +23,7 @@ bulky,2
 life-size,1
 slim,0.9
 chunky,2.0
-limitless,5.0
+limitless,4.0
 small,0.2
 colossal,3.5
 little,0.4
@@ -34,7 +34,7 @@ stocky,1.5
 corpulent,2.0
 massive,3.0
 stout,1.3
-cosmic,5.0
+cosmic,4.0
 meager,0.6
 strapping,1.0
 measly,0.3
@@ -48,7 +48,7 @@ teensy,0.3
 emaciated,0.4
 miniature,0.5
 teeny,0.5
-endless,5.0
+endless,4.0
 minuscule,0.5
 teeny-tiny,0.5
 enormous,4.0
@@ -89,10 +89,10 @@ portly,1.4
 underweight,0.6
 great,1.5
 pudgy,1.3
-unlimited,5.0
+unlimited,4.0
 heavy,1.6
 puny,0.5
-vast,5.0
+vast,4.0
 hefty,2.0
 rotund,1.7
 wee,0.4

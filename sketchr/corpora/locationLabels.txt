@@ -14,3 +14,8 @@ highway
 sky
 tower
 venue
+road
+carpet
+port
+garage
+hangar

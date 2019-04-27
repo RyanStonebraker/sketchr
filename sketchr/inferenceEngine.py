@@ -110,12 +110,12 @@ class InferenceEngine():
                 modelWriter.write("\n")
 
 if __name__ == "__main__":
-    inferenceEngine = InferenceEngine(
-        "corpora/mobydick.txt",
-        "corpora/sherlockholmes.txt",
-        outFile="models/inference/large"
-    )
-    # inferenceEngine = InferenceEngine(modelFile="models/inference/large")
+    # inferenceEngine = InferenceEngine(
+    #     "corpora/mobydick.txt",
+    #     "corpora/sherlockholmes.txt",
+    #     outFile="models/inference/large"
+    # )
+    inferenceEngine = InferenceEngine(modelFile="models/inference/large")
     while True:
         user = input("Enter Word: ")
         print(inferenceEngine.getDescriptiveWords(user))

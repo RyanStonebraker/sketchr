@@ -64,8 +64,6 @@ class Visualizer():
         style["z-index"] = pos["z"]
         if "background" not in style:
             style["background-image"] = "url(\"{}\")".format(src.strip())
-            style["background-size"] = "cover"
-        else:
             style["background-size"] = "contain"
         style["background-position"] = "center"
         style["background-repeat"] = "no-repeat"
@@ -88,10 +86,15 @@ class Visualizer():
             if background["modifiers"]["color"]:
                 style["filter"] = "opacity(0.6) drop-shadow(0 0 0 {})".format(list(background["modifiers"]["color"])[0])
                 style["background"] = "url(\"{}\")".format(backgroundImage.strip())
+            else:
+                style["background"] = "url(\"{}\")".format(backgroundImage.strip())
+                style["background-size"] = "cover"
 
             self.addImage(backgroundImage, pos, style)
         for i, object in enumerate(self.scene["objects"]):
             objectImage = self.cbir.retrieveImage(object["subject"])
+            if not objectImage:
+                continue
 
             sizeMod = 1
             if object["modifiers"]["size"]:
@@ -107,6 +110,7 @@ class Visualizer():
             if object["modifiers"]["color"]:
                 style["filter"] = "opacity(0.6) drop-shadow(0 0 0 {})".format(list(object["modifiers"]["color"])[0])
                 style["background"] = "url(\"{}\")".format(objectImage.strip())
+                style["background-size"] = "contain"
 
             for j in range(0, int(object["modifiers"]["quantity"])):
                 pos = {

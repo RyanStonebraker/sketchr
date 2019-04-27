@@ -53,6 +53,8 @@ class CBIR():
             else:
                 self.cache.pop(name, None)
                 self.rewriteCache()
+        elif name not in self.wordnet:
+            return None
 
         wordIds = self.wordnet[name]
         wordIds.sort(key=lambda x: x[1])

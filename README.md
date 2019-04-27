@@ -1,6 +1,9 @@
 # sketchr
 NLP to artistic rendering synthesizer.
 
+![](readme/sketchr_example_in.png)
+![](readme/sketchr_example_out.png)
+
 ## Overview
 Sketchr is a natural language processing application running on a Flask web-frontend that takes user inputted sentences, identifies the subjects and associated descriptor words, and synthesizes an image scene.
 

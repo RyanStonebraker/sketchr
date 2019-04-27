@@ -44,7 +44,7 @@ def train(trainingData, model=None, outputDir=None, trainingIteration=100, testD
             for batch in batches:
                 texts, annotations = zip(*batch)
                 nlp.update(texts, annotations, drop=0.5, losses=losses)
-            print("Losses", losses)
+            print(str(itn) + ",", losses['ner'])
     if outputDir:
         outputDir = Path(outputDir)
         if not outputDir.exists():
@@ -60,4 +60,4 @@ def train(trainingData, model=None, outputDir=None, trainingIteration=100, testD
 
 if __name__ == "__main__":
     trainingData = getTrainingData()
-    train(trainingData, outputDir="models/nerModel", trainingIteration=100)
+    train(trainingData, trainingIteration=100)

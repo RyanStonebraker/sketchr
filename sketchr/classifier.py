@@ -171,4 +171,4 @@ if __name__ == "__main__":
     inferenceEngine = inferenceEngine.InferenceEngine(modelFile="models/inference/large")
     classifier = Classifier(inferenceEngine)
     query = "Look at the 5 large whales."
-    classifier.classify(query)
+    print(classifier.classify(query))

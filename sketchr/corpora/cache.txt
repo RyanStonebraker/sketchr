@@ -19,3 +19,8 @@ carpet, https://4.imimg.com/data4/NY/BJ/MY-23905479/img_9382-500x500.jpg
 hangar, http://farm4.static.flickr.com/3035/2909007406_b72325be43.jpg
 helicopter, https://s3.amazonaws.com/peoplepng/wp-content/uploads/2018/07/24162719/Red-Helicopter-Transparent-Images.png
 world, https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg
+mountain, http://farm3.static.flickr.com/2169/2373936925_9ee0009c46.jpg
+top, http://images.kapaza.com/photos/16700000/16723053.jpg
+floor, http://farm1.static.flickr.com/140/396023476_181ac41e2e.jpg
+floor, http://farm1.static.flickr.com/140/396023476_181ac41e2e.jpg
+floor, http://farm1.static.flickr.com/140/396023476_181ac41e2e.jpg

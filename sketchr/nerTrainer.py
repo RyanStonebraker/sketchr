@@ -44,7 +44,6 @@ def train(trainingData, model=None, outputDir=None, trainingIteration=100, testD
             for batch in batches:
                 texts, annotations = zip(*batch)
                 nlp.update(texts, annotations, drop=0.5, losses=losses)
-            print(str(itn) + ",", losses['ner'])
     if outputDir:
         outputDir = Path(outputDir)
         if not outputDir.exists():
@@ -57,7 +56,30 @@ def train(trainingData, model=None, outputDir=None, trainingIteration=100, testD
             print("Entities:", [(ent.text, ent.label_) for ent in doc.ents])
             print("Tokens:", [(t.text, t.ent_type_, t.ent_iob) for t in doc])
 
+def test(testFile, model, outputFile):
+    nlp = spacy.load(model)
+    with open(outputFile, "w") as outputWriter:
+        outputWriter.write("correctly_identified, wrongly_identified, expected\n")
+        with open(testFile, "r") as testReader:
+            for line in testReader:
+                line = line.strip().split(",, ")
+                expected = line[0].split(", ")
+                sentence = line[1].strip()
+                doc = nlp(sentence)
+                entities = [(ent.text, ent.label_) for ent in doc.ents]
+                print("Expected:", expected, " Actual:", entities)
+                correctIdentified = 0
+                wronglyIdentified = 0
+                for entity in entities:
+                    if entity[0] in expected:
+                        correctIdentified += 1
+                    else:
+                        wronglyIdentified += 1
+                outputWriter.write("{0}, {1}, {2}\n".format(correctIdentified, wronglyIdentified, len(expected)))
+                print("Score:", float(correctIdentified/len(expected)))
+
 
 if __name__ == "__main__":
     trainingData = getTrainingData()
-    train(trainingData, trainingIteration=100)
+    # train(trainingData, trainingIteration=100)
+    test("corpora/nerCorpus.txt", "models/nerModel", "corpora/nerCorpus_results.txt")

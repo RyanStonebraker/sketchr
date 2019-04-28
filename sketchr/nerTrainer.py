@@ -57,21 +57,24 @@ def train(trainingData, model=None, outputDir=None, trainingIteration=100, testD
             print("Tokens:", [(t.text, t.ent_type_, t.ent_iob) for t in doc])
 
 def test(testFile, model, outputFile):
-    nlp = spacy.load(model)
+    nlp = spacy.load(model) if model else spacy.load("en")
     with open(outputFile, "w") as outputWriter:
         outputWriter.write("correctly_identified, wrongly_identified, expected\n")
         with open(testFile, "r") as testReader:
             for line in testReader:
                 line = line.strip().split(",, ")
-                expected = line[0].split(", ")
+                expected = line[0].lower().split(", ")
                 sentence = line[1].strip()
                 doc = nlp(sentence)
                 entities = [(ent.text, ent.label_) for ent in doc.ents]
                 print("Expected:", expected, " Actual:", entities)
                 correctIdentified = 0
                 wronglyIdentified = 0
+                if not expected[0] and not entities:
+                    correctIdentified = 1
+                    wronglyIdentified = 1
                 for entity in entities:
-                    if entity[0] in expected:
+                    if entity[0].lower() in expected:
                         correctIdentified += 1
                     else:
                         wronglyIdentified += 1
@@ -82,4 +85,4 @@ def test(testFile, model, outputFile):
 if __name__ == "__main__":
     trainingData = getTrainingData()
     # train(trainingData, trainingIteration=100)
-    test("corpora/nerCorpus.txt", "models/nerModel", "corpora/nerCorpus_results.txt")
+    test("corpora/nerCorpus.txt", None, "corpora/builtin_results.txt")

@@ -4,3 +4,33 @@ track,, Runners jog on a track.
 runway,, The plane landed on a runway.
 room,, The room was full.
 hangar,, The plane is in the hangar next to the red helicopter.
+anchorage,, The dog ran across the street in Anchorage.
+porch,, The cat jumped off the porch.
+minnesota, debarr, junction,, The police officers are waiting at the Minnesota and Debarr junction.
+dining room,, The man was eating in the dining room.
+airport,, A person walked into the airport.
+mountain,, Two birds landed on the mountain.
+forest,, Several hikers walked through the forest.
+resort,, The vacationer went skiing at the resort.
+freeway,, A car drove on the freeway.
+lake,, The jet ski traveled across the lake.
+ocean,, A boat zoomed atop the ocean.
+track,, Competitors run on a track.
+beach,, A beach is a great place for a picnic.
+beach,, People like going to the beach.
+road,, A plane flys over the road.
+highway, germany,, Cars drive fast on the highway in Germany.
+sky,, Clouds dotted the sky.
+track,, Runners jog on the track.
+port,, The cruise ship was docked in port.
+garage,, The car was in the garage.
+carpet,, The apple is on the carpet.
+,, London is known for its clock tower.
+,, Dogs are better than cats.
+venue,, The venue was packed.
+,, Look at the 5 whales.
+,, Look at the cat.
+dining room,, The dining room was full of people.
+street,, The dog ran across the street.
+table,, The cat jumped over the table.
+ocean, hawaii,, Fish swim in the ocean in Hawaii.

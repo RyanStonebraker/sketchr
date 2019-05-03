@@ -55,11 +55,6 @@ class Classifier():
         return identifiedObject
 
     def classifyDescriptors(self, descriptors):
-        # for i, descriptor in enumerate(descriptors):
-            # if descriptor.pos_ != "SUBJ":
-            #     if hasattr(descriptor, "pos_") and descriptor.pos_ == "ADJ" and (descriptors[i-1].pos_ == "ADJ" or descriptors[i-1].pos_ == "NOUN"):
-            #         descriptors[i-1].text += " " + descriptor.text
-            #         del descriptors[i]
         classifiedDescriptors = {}
         pastRef = False
         classifiedDescriptors["color"] = set()
@@ -81,7 +76,7 @@ class Classifier():
                 classifiedDescriptors["quantity"] = descriptor.lemma_
         return (classifiedDescriptors, pastRef)
 
-    def addSubjectDescriptors(self, subject, descriptors, subjectEntType=None):
+    def addSubjectDescriptors(self, subject, descriptors, subjectEntType=None, pronoun=False):
         subject = self.lemmatizer(subject, "NOUN")[0]
         descriptors, pastRef = self.classifyDescriptors(descriptors)
         if subject not in self.subjects:
@@ -89,7 +84,7 @@ class Classifier():
         else:
             # TODO: If past ref and referring to multiple quantities, then get lemma of subject and modify all subjects being referred to
             # TODO: Compare descriptors to existing descriptors and choose the one that best fits, preferring the most recent
-            if pastRef:
+            if pastRef or pronoun:
                 for propertyName, props in self.subjects[subject][-1].items():
                     if isinstance(props, set):
                         self.subjects[subject][-1][propertyName] = self.subjects[subject][-1][propertyName].union(descriptors[propertyName])
@@ -100,11 +95,14 @@ class Classifier():
                 if "entity" not in individual or not individual["entity"]:
                     individual["entity"] = subjectEntType
 
+    def detectBackground(self, match):
+        return "entity" in match and match["entity"] in ["GPE", "LOC", "EVENT", "FAC"]
+
     def addSubjectsToScene(self):
         for subject, matches in self.subjects.items():
             for match in matches:
                 appendTo = "objects"
-                if "entity" in match and match["entity"] in ["GPE", "LOC", "EVENT", "FAC"]:
+                if self.detectBackground(match):
                     appendTo = "backgrounds"
                 match.pop("entity", None)
                 self.scene[appendTo].append({
@@ -129,6 +127,38 @@ class Classifier():
             if matchingSizes and not object["modifiers"]["size"]:
                 object["modifiers"]["size"] = {random.choice(matchingSizes)}
 
+    def addUniqueMatches(self, doc, subject, pronoun=False):
+        matchedRanges = []
+        for match_id, start, end in self.matcher(doc):
+            skipMatch = False
+            for prevStart, prevEnd in matchedRanges:
+                if start >= prevStart and end <= prevEnd:
+                    skipMatch = True
+                    break
+            if skipMatch:
+                continue
+            matchedRanges.append((start, end))
+            print("match", doc[start:end])
+            self.addSubjectDescriptors(subject, [token for token in doc[start:end] if token.text != subject], pronoun=pronoun)
+
+    def matchPattern(self, doc, pattern, subject, pronoun=False):
+        self.matcher.add(subject, None, pattern)
+        self.addUniqueMatches(doc, subject, pronoun=pronoun)
+        self.matcher.remove(subject)
+
+    def matchPatterns(self, sentence):
+        doc = self.nlp(sentence.text)
+        for subject in self.subjects:
+            pattern = [{'POS': 'DET', 'OP': '?'}, {'POS': 'ADJ', 'OP': '*'}, {'LOWER': subject}, {'LEMMA': 'be'}, {'POS': 'ADJ'}]
+            self.matchPattern(doc, pattern, subject)
+
+        pattern = [{'LEMMA': '-PRON-'}, {'LEMMA': 'be'}, {'POS': 'ADJ'}]
+
+        subject = ""
+        for subject in list(self.subjects)[::-1]:
+            if not self.detectBackground(self.subjects[subject][-1]):
+                self.matchPattern(doc, pattern, subject, pronoun=True)
+                break
 
     def classify(self, query):
         self.scene = {
@@ -140,26 +170,12 @@ class Classifier():
         for i, sentence in enumerate(doc.sents):
             for chunk in sentence.noun_chunks:
                 subject = chunk.root.text
+                if chunk.root.lemma_ == "-PRON-":
+                    continue
                 descriptors = [word for word in chunk if word.text != subject]
                 self.addSubjectDescriptors(subject, descriptors, chunk.root.ent_type_)
 
-            doc = self.nlp(sentence.text)
-            for subject in self.subjects:
-                pattern = [{'POS': 'DET', 'OP': '?'}, {'POS': 'ADJ', 'OP': '*'}, {'LOWER': subject}, {'LEMMA': 'be'}, {'POS': 'ADJ'}]
-                self.matcher.add(subject, None, pattern)
-                matches = self.matcher(doc)
-                matchedRanges = []
-                for match_id, start, end in self.matcher(doc):
-                    skipMatch = False
-                    for prevStart, prevEnd in matchedRanges:
-                        if start >= prevStart and end <= prevEnd:
-                            skipMatch = True
-                            break
-                    if skipMatch:
-                        continue
-                    matchedRanges.append((start, end))
-                    self.addSubjectDescriptors(subject, [token for token in doc[start:end] if token.text != subject])
-                self.matcher.remove(subject)
+            self.matchPatterns(sentence)
 
         self.addSubjectsToScene()
         self.inferContext()

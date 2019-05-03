@@ -74,6 +74,8 @@ class Visualizer():
     def generate(self):
         for i, background in enumerate(self.scene["backgrounds"]):
             backgroundImage = self.cbir.retrieveImage(background["subject"])
+            if not backgroundImage:
+                continue
             pos = {
                 "x": 0,
                 "y": 0,

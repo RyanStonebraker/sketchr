@@ -22,5 +22,4 @@ world, https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_A
 mountain, http://farm3.static.flickr.com/2169/2373936925_9ee0009c46.jpg
 top, http://images.kapaza.com/photos/16700000/16723053.jpg
 floor, http://farm1.static.flickr.com/140/396023476_181ac41e2e.jpg
-floor, http://farm1.static.flickr.com/140/396023476_181ac41e2e.jpg
-floor, http://farm1.static.flickr.com/140/396023476_181ac41e2e.jpg
+moon, https://static.scientificamerican.com/sciam/cache/file/31F6D6C9-C6B3-420C-BFBC6103CA6718A8_source.jpg?w=590&h=800&56C73E16-F685-45A0-A18A3283B36DAF8A
